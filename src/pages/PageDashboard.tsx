@@ -1,14 +1,24 @@
 import { SetStateAction } from 'react'
-import ComponentNavbar from '../components/ComponentNavbar'
-import { Account } from '../types/typeIndex'
-import { Box } from '@chakra-ui/react'
+import ComponentWorkerNavbar from '../components/ComponentWorkerNavbar'
+import { Account, Trade } from '../types/typeIndex'
+import PageWorkerDashboard from './subPages/PageWorkerDashboard'
 
-const PageDashboard = ({ fullUserInfo, setFullUserInfo }: { fullUserInfo: Account, setFullUserInfo: React.Dispatch<SetStateAction<Account | undefined>> }) => {
-    return (
-        <ComponentNavbar fullUserInfo={fullUserInfo} setFullUserInfo={setFullUserInfo} >
-            <Box textTransform="capitalize">Welcome {fullUserInfo.account_name}</Box>
-        </ComponentNavbar>
-    )
+const PageDashboard = ({ fullUserInfo, setFullUserInfo, allTrades }: { fullUserInfo: Account, setFullUserInfo: React.Dispatch<SetStateAction<Account | undefined>>, allTrades: Trade[] }) => {
+    console.log(fullUserInfo);
+
+    if (fullUserInfo.account_role_id === 1004) {
+        return (
+            <ComponentWorkerNavbar setFullUserInfo={setFullUserInfo}>
+                <PageWorkerDashboard fullUserInfo={fullUserInfo} allTrades={allTrades} />
+            </ComponentWorkerNavbar>
+        )
+    } else {
+        //  To be done for managers nav
+        return (
+            <></>
+        )
+    }
+
 }
 
 export default PageDashboard

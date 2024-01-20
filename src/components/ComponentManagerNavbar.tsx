@@ -1,12 +1,12 @@
 import { Box, Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack, IconButton, Link as ChakraLink, Menu, MenuButton, MenuItem, MenuList, useDisclosure, VStack, Flex, StackDivider } from "@chakra-ui/react";
 import { Account } from "../types/typeIndex";
-import { ChevronDownIcon, HamburgerIcon, SettingsIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, SettingsIcon } from "@chakra-ui/icons";
 import { SetStateAction } from "react";
 import { Link as ReactRouterLink } from "react-router-dom";
 import toast from "react-hot-toast";
 import React from "react";
 
-const ComponentNavbar = ({ children, fullUserInfo, setFullUserInfo }: { children?: React.ReactNode; fullUserInfo: Account; setFullUserInfo: React.Dispatch<SetStateAction<Account | undefined>> }) => {
+const ComponentManagerNavbar = ({ children, fullUserInfo, setFullUserInfo }: { children?: React.ReactNode; fullUserInfo: Account; setFullUserInfo: React.Dispatch<SetStateAction<Account | undefined>> }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const settingItems = (
@@ -46,32 +46,36 @@ const ComponentNavbar = ({ children, fullUserInfo, setFullUserInfo }: { children
     );
 
     const mobileNavbar = (
-        <HStack w="full" justify="space-between" display={["flex", null, null, "none"]}>
-            {drawer}
-            <h1>DashBoard</h1>
-            <Menu>
-                <MenuButton as={Button} rightIcon={<ChevronDownIcon />}> <SettingsIcon /> </MenuButton>
-                <MenuList>{settingItems}</MenuList>
-            </Menu>
-        </HStack>
+        <VStack display={["flex", null, null, "none"]} >
+            <HStack w="full" justify="space-between">
+                {drawer}
+                <h1>DashBoard</h1>
+                <Menu>
+                    <MenuButton as={Button}> <SettingsIcon /> </MenuButton>
+                    <MenuList>{settingItems}</MenuList>
+                </Menu>
+            </HStack>
+            {children}
+        </VStack>
     );
 
-    const desktopNavbar = (
-        <Box display={["none", null, null, "flex"]}>
-            <Box></Box>
-            <Box>
-                <Box></Box>
-                <Box></Box>
-            </Box>
-        </Box>
-    );
+    // only applies to managers
+    // const desktopNavbar = (
+    //     <Box display={["none", null, null, "flex"]}>
+    //         <Box></Box>
+    //         <Box>
+    //             <Box></Box>
+    //             <Box></Box>
+    //         </Box>
+    //     </Box>
+    // );
 
     return (
         <Box p="4">
             {mobileNavbar}
-            {desktopNavbar}
+            {/* {desktopNavbar} */}
         </Box>
     );
 };
 
-export default ComponentNavbar;
+export default ComponentManagerNavbar;

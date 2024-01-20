@@ -17,13 +17,17 @@ import toast from "react-hot-toast";
 import saveBearerTokenToLocalStorage from "./utils/saveBearerTokenToLocalStroage";
 import GetAccountIdFromJWT from "./api calls/GET/GetAccountIdFromJWT";
 import GetIndividualAccount from "./api calls/GET/GetIndividualAccount";
-import { Account } from "./types/typeIndex";
+import { Account, Role, Trade } from "./types/typeIndex";
 import PageDashboard from "./pages/PageDashboard";
 import getBearerTokenFromLocalStorage from "./utils/getBearerTokenFromLocalStorage";
+import GetAllTrades from "./api calls/GET/GetTrades";
+import GetAllRoles from "./api calls/GET/GetRoles";
 
 function App() {
   const [userEmailInput, setUserEmailInput] = useState<string>("");
   const [userPasswordInput, setUserPasswordInput] = useState<string>("");
+  const [allTrades, setAllTrades] = useState<Trade[]>();
+  const [allRoles, setAllRoles] = useState<Role[]>();
 
   const [fullUserInfo, setFullUserInfo] = useState<Account | undefined>(undefined);
 
@@ -31,8 +35,22 @@ function App() {
     return getBearerTokenFromLocalStorage();
   };
 
-  const handleGetFullAccountInfo = async (): Promise<number | Account> => {
+  const handleGetFullAccountInfo = async (): Promise<Account | number> => {
     return await GetIndividualAccount(await GetAccountIdFromJWT());
+  };
+
+  const handleGetAllTrades = async () => {
+    const apiResponse = await GetAllTrades()
+    if (typeof apiResponse !== 'number') {
+      setAllTrades(apiResponse);
+    }
+  };
+
+  const handleGetAllRoles = async () => {
+    const apiResponse = await GetAllRoles()
+    if (typeof apiResponse !== 'number') {
+      setAllRoles(apiResponse);
+    }
   };
 
   useEffect(() => {
@@ -45,11 +63,18 @@ function App() {
       });
     }
 
-    return () => { };
-  }, []);
+    if (allTrades === undefined || typeof allTrades === 'number') {
+      handleGetAllTrades();
+    }
 
-  if (fullUserInfo !== undefined) {
-    return <PageDashboard fullUserInfo={fullUserInfo} setFullUserInfo={setFullUserInfo} />;
+    if (allRoles === undefined || typeof allRoles === 'number') {
+      handleGetAllRoles();
+    }
+
+  }, [fullUserInfo]);
+
+  if (fullUserInfo !== undefined && allTrades !== undefined) {
+    return <PageDashboard fullUserInfo={fullUserInfo} setFullUserInfo={setFullUserInfo} allTrades={allTrades} />;
   }
 
   const logUserInHandler = async () => {
@@ -69,7 +94,6 @@ function App() {
           await GetAccountIdFromJWT()
         );
 
-        console.log(fullAccountInfo);
         if (typeof fullAccountInfo !== "number") {
           setFullUserInfo(fullAccountInfo);
           toast.success("Login successfull.");
