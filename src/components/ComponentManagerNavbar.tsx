@@ -1,10 +1,10 @@
-import { Box, Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack, IconButton, Link as ChakraLink, Menu, MenuButton, MenuItem, MenuList, useDisclosure, VStack, Flex, StackDivider } from "@chakra-ui/react";
+import { Box, Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, useDisclosure, VStack } from "@chakra-ui/react";
 import { Account } from "../types/typeIndex";
 import { HamburgerIcon, SettingsIcon } from "@chakra-ui/icons";
 import { SetStateAction } from "react";
-import { Link as ReactRouterLink } from "react-router-dom";
 import toast from "react-hot-toast";
 import React from "react";
+import ComponentNavigationLinks from "./ComponentNavigationLinks";
 
 const ComponentManagerNavbar = ({ children, fullUserInfo, setFullUserInfo }: { children?: React.ReactNode; fullUserInfo: Account; setFullUserInfo: React.Dispatch<SetStateAction<Account | undefined>> }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -21,13 +21,6 @@ const ComponentManagerNavbar = ({ children, fullUserInfo, setFullUserInfo }: { c
         </MenuItem>
     );
 
-    const menuLinks = (
-        <>
-            <ChakraLink as={ReactRouterLink} to="/">Dashboard</ChakraLink>
-            <ChakraLink as={ReactRouterLink} to="/all-jobs">All Jobs</ChakraLink>
-        </>
-    );
-
     const drawer = (
         <>
             <IconButton icon={<HamburgerIcon />} onClick={onOpen} aria-label="Open menu">Open</IconButton>
@@ -37,7 +30,7 @@ const ComponentManagerNavbar = ({ children, fullUserInfo, setFullUserInfo }: { c
                     <DrawerCloseButton />
                     <DrawerHeader>ClockedIn</DrawerHeader>
                     <DrawerBody>
-                        <VStack align="start">{menuLinks}</VStack>
+                        <VStack align="start">{<ComponentNavigationLinks />}</VStack>
                     </DrawerBody>
                     <DrawerFooter></DrawerFooter>
                 </DrawerContent>
@@ -58,17 +51,6 @@ const ComponentManagerNavbar = ({ children, fullUserInfo, setFullUserInfo }: { c
             {children}
         </VStack>
     );
-
-    // only applies to managers
-    // const desktopNavbar = (
-    //     <Box display={["none", null, null, "flex"]}>
-    //         <Box></Box>
-    //         <Box>
-    //             <Box></Box>
-    //             <Box></Box>
-    //         </Box>
-    //     </Box>
-    // );
 
     return (
         <Box p="4">

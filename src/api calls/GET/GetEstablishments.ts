@@ -1,9 +1,9 @@
 import axios, { AxiosError } from "axios";
 import getBearerTokenFromLocalStorage from "../../utils/getBearerTokenFromLocalStorage";
-import { Role } from "../../types/typeIndex";
+import { Establishment } from "../../types/typeIndex";
 
-const GetAllRoles = async (): Promise<Role[] | number> => {
-  return await axios.get(`${import.meta.env.VITE_API_URL}/roles`, {
+const GetAllEstablishments = async (): Promise<Establishment[] | number> => {
+  return await axios.get(`${import.meta.env.VITE_API_URL}/establishments`, {
       headers: { Authorization: getBearerTokenFromLocalStorage() },
     })
     .then((response) => {
@@ -23,4 +23,4 @@ const GetAllRoles = async (): Promise<Role[] | number> => {
     });
 };
 
-export default GetAllRoles;
+export default GetAllEstablishments;

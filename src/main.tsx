@@ -17,10 +17,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
   },
-  {
-    path: "/all-jobs",
-    element: <PageAllJobs />,
-  },
+  // {
+  //   path: "/all-jobs",
+  //   element: <App />,
+  // },
 ]);
 
 const changes = {
@@ -47,7 +47,7 @@ const changes = {
       800: "#3EB489",
       900: "#3EB489",
     },
-  }
+  },
 };
 
 const theme = extendTheme({ changes });

@@ -1,3 +1,4 @@
+
 export type Trade = {
   trade_id: number;
   trade_name: string;
@@ -19,7 +20,7 @@ export type Account = {
   account_password: string;
   account_name: string;
   account_establishment_id: number | null;
-  account_role_id: number | null;
+  account_role_id: number;
   account_trade_id: number | null;
   account_hourly_rate: number | null;
   account_hourly_overtime_rate: number | null;
@@ -31,6 +32,7 @@ export type Timesheet = {
   timesheet_account_id: number;
   timesheet_start_date: string;
   timesheet_end_date: string | null;
+  timesheetJob: Jobs[];
 };
 
 export type Jobs = {

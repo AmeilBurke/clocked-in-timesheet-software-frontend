@@ -1,13 +1,13 @@
 import axios, { AxiosError } from "axios";
 import getBearerTokenFromLocalStorage from "../../utils/getBearerTokenFromLocalStorage";
-import { Role } from "../../types/typeIndex";
+import { Timesheet } from "../../types/typeIndex";
 
-const GetAllRoles = async (): Promise<Role[] | number> => {
-  return await axios.get(`${import.meta.env.VITE_API_URL}/roles`, {
+const GetAllTimesheetsForSingleAccount = async (accountId: number): Promise<Timesheet[] | number> => {
+  return await axios.get(`${import.meta.env.VITE_API_URL}/timesheets/all/${accountId}`, {
       headers: { Authorization: getBearerTokenFromLocalStorage() },
     })
     .then((response) => {
-      // console.log(response);
+      console.log(response);
       if (response.data) {
         return response.data;
       } else {
@@ -23,4 +23,4 @@ const GetAllRoles = async (): Promise<Role[] | number> => {
     });
 };
 
-export default GetAllRoles;
+export default GetAllTimesheetsForSingleAccount;

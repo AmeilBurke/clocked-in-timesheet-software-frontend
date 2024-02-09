@@ -8,6 +8,7 @@ import {
   StackDivider,
   VStack,
   Input,
+  Spinner,
 } from "@chakra-ui/react";
 import "./App.css";
 import { ComponentButtonPrimary } from "./components/ComponentButtons";
@@ -17,141 +18,120 @@ import toast from "react-hot-toast";
 import saveBearerTokenToLocalStorage from "./utils/saveBearerTokenToLocalStroage";
 import GetAccountIdFromJWT from "./api calls/GET/GetAccountIdFromJWT";
 import GetIndividualAccount from "./api calls/GET/GetIndividualAccount";
-import { Account, Role, Trade } from "./types/typeIndex";
+import { Account, Establishment, Role, Trade } from "./types/typeIndex";
 import PageDashboard from "./pages/PageDashboard";
 import getBearerTokenFromLocalStorage from "./utils/getBearerTokenFromLocalStorage";
 import GetAllTrades from "./api calls/GET/GetTrades";
 import GetAllRoles from "./api calls/GET/GetRoles";
+import GetAllEstablishments from "./api calls/GET/GetEstablishments";
+import {
+  handleAsyncGetAllEstablishments,
+  handleAsyncGetAllRoles,
+  handleAsyncGetAllTrades,
+  handleAsyncGetBearerTokenFromStorage,
+  handleAsyncGetFullAccountInfo,
+} from "./utils/useEffectAsyncFuntionsIndex";
+import PageLogIn from "./pages/PageLogIn";
 
 function App() {
-  const [userEmailInput, setUserEmailInput] = useState<string>("");
-  const [userPasswordInput, setUserPasswordInput] = useState<string>("");
-  const [allTrades, setAllTrades] = useState<Trade[]>();
-  const [allRoles, setAllRoles] = useState<Role[]>();
-
+  const [allTrades, setAllTrades] = useState<Trade[] | number>([]);
+  const [allRoles, setAllRoles] = useState<Role[] | number>([]);
+  const [allEstablishments, setAllEstablishments] = useState<Establishment[] | number>([]);
+  const [apiRequestErrorTrades, setApiRequestErrorTrades] = useState<boolean>(false);
+  const [apiRequestErrorRoles, setApiRequestErrorRoles] = useState<boolean>(false);
+  const [apiRequestErrorEstablishments, setApiRequestErrorEstablishments] = useState<boolean>(false);
   const [fullUserInfo, setFullUserInfo] = useState<Account | undefined>(undefined);
-
-  const handleGetBearerTokenFromStorage = (): string | null => {
-    return getBearerTokenFromLocalStorage();
-  };
-
-  const handleGetFullAccountInfo = async (): Promise<Account | number> => {
-    return await GetIndividualAccount(await GetAccountIdFromJWT());
-  };
-
-  const handleGetAllTrades = async () => {
-    const apiResponse = await GetAllTrades()
-    if (typeof apiResponse !== 'number') {
-      setAllTrades(apiResponse);
-    }
-  };
-
-  const handleGetAllRoles = async () => {
-    const apiResponse = await GetAllRoles()
-    if (typeof apiResponse !== 'number') {
-      setAllRoles(apiResponse);
-    }
-  };
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const bearerTokenCheck = handleGetBearerTokenFromStorage();
+    const bearerTokenCheck = handleAsyncGetBearerTokenFromStorage();
     if (bearerTokenCheck !== null && fullUserInfo === undefined) {
-      handleGetFullAccountInfo().then(response => {
-        if (response !== undefined && typeof response !== 'number') {
+      handleAsyncGetFullAccountInfo().then((response) => {
+        if (response !== undefined && typeof response !== "number") {
           setFullUserInfo(response);
         }
       });
     }
 
-    if (allTrades === undefined || typeof allTrades === 'number') {
-      handleGetAllTrades();
-    }
+    // need to rethink logic around error displays and implement loading screens
 
-    if (allRoles === undefined || typeof allRoles === 'number') {
-      handleGetAllRoles();
-    }
-
-  }, [fullUserInfo]);
-
-  if (fullUserInfo !== undefined && allTrades !== undefined) {
-    return <PageDashboard fullUserInfo={fullUserInfo} setFullUserInfo={setFullUserInfo} allTrades={allTrades} />;
-  }
-
-  const logUserInHandler = async () => {
-    if (
-      userEmailInput.includes("@") &&
-      userEmailInput !== "" &&
-      userPasswordInput !== ""
-    ) {
-      const apiCall = await GetUserBearerToken(
-        userEmailInput,
-        userPasswordInput
-      );
-
-      if (typeof apiCall !== "number") {
-        saveBearerTokenToLocalStorage(apiCall.access_token);
-        const fullAccountInfo = await GetIndividualAccount(
-          await GetAccountIdFromJWT()
-        );
-
-        if (typeof fullAccountInfo !== "number") {
-          setFullUserInfo(fullAccountInfo);
-          toast.success("Login successfull.");
-        } else {
-          toast.error(
-            "There was an error with logging you in. try again later."
-          );
-        }
-      } else {
-        toast.error("Check your email or password & try again.");
+    if (typeof allTrades !== "number") {
+      if (allTrades.length === 0) {
+        handleAsyncGetAllTrades(setAllTrades);
+        setApiRequestErrorTrades(false);
       }
     } else {
-      toast.error("Check your email or password & try again.");
+      // if (apiRequestErrorTrades === false) {
+      //   if (typeof fullUserInfo !== "undefined") {
+      //     toast.error(
+      //       "There was an error while fetching the list of available trades. Please try again later."
+      //     );
+      //     setApiRequestErrorTrades(true);
+      //   }
+      // }
     }
-  };
 
-  return (
-    <VStack h="100vh" alignItems="center" justifyContent="center" bg="gray.100">
-      <Card>
-        <CardHeader>
-          <Heading size="md">ClockedIn - Timesheet Software</Heading>
-        </CardHeader>
+    if (typeof allRoles !== "number") {
+      if (allRoles.length === 0) {
+        handleAsyncGetAllRoles(setAllRoles);
+        setApiRequestErrorRoles(false);
+      }
+    } else {
+      // if (apiRequestErrorRoles === false) {
+      //   if (typeof fullUserInfo !== "undefined") {
+      //     toast.error(
+      //       "There was an error while fetching the list of available roles. Please try again later."
+      //     );
+      //     setApiRequestErrorRoles(true);
+      //   }
+      // }
+    }
 
-        <CardBody>
-          <Stack divider={<StackDivider />} spacing="4">
-            <Box>
-              <Heading mb="4" size="xs" textTransform="uppercase">
-                Email
-              </Heading>
-              <Input
-                placeholder="Email"
-                onChange={(event) =>
-                  setUserEmailInput(
-                    event.target.value.toLocaleLowerCase().trim()
-                  )
-                }
-              />
-            </Box>
-            <Box>
-              <Heading mb="4" size="xs" textTransform="uppercase">
-                Password
-              </Heading>
-              <Input
-                placeholder="Password"
-                onChange={(event) => setUserPasswordInput(event.target.value)}
-              />
-            </Box>
-            <Box alignSelf="flex-end">
-              <ComponentButtonPrimary
-                textToDisplay="Log In"
-                onClickFunction={logUserInHandler}
-              />
-            </Box>
-          </Stack>
-        </CardBody>
-      </Card>
-    </VStack>
-  );
+    if (typeof allEstablishments !== "number") {
+      if (allEstablishments.length === 0) {
+        handleAsyncGetAllEstablishments(setAllEstablishments);
+        setApiRequestErrorEstablishments(false);
+      }
+    } else {
+      // if (apiRequestErrorEstablishments === false) {
+      //   if (typeof fullUserInfo !== "undefined") {
+      //     toast.error(
+      //       "There was an error while fetching the list of available establishments. Please try again later."
+      //     );
+      //     setApiRequestErrorRoles(true);
+      //   }
+      // }
+    }
+  }, [fullUserInfo, allTrades, allRoles, allEstablishments]);
+
+  if (
+    fullUserInfo !== undefined &&
+    typeof allTrades !== "number" &&
+    typeof allTrades !== undefined &&
+    typeof allRoles !== "number" &&
+    typeof allRoles !== undefined &&
+    typeof allEstablishments !== "number" &&
+    typeof allEstablishments !== undefined
+  ) {
+    return (
+      <PageDashboard
+        fullUserInfo={fullUserInfo}
+        setFullUserInfo={setFullUserInfo}
+        allTrades={allTrades}
+        allRoles={allRoles}
+        allEstablishments={allEstablishments}
+      />
+    );
+  } else {
+    return (
+      <PageLogIn
+        setFullUserInfo={setFullUserInfo}
+        setAllTrades={setAllTrades}
+        setAllRoles={setAllRoles}
+        setAllEstablishments={setAllEstablishments}
+      />
+    );
+  }
 }
 
 export default App;

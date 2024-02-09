@@ -7,7 +7,7 @@ const GetAllTrades = async (): Promise<Trade[] | number> => {
       headers: { Authorization: getBearerTokenFromLocalStorage() },
     })
     .then((response) => {
-      console.log(response);
+      // console.log(response);
       if (response.data) {
         return response.data;
       } else {
@@ -15,6 +15,7 @@ const GetAllTrades = async (): Promise<Trade[] | number> => {
       }
     })
     .catch((error) => {
+      // console.log(error)
       if (error instanceof AxiosError) {
         return error.response?.status;
       } else {
